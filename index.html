@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutomataLab — NFA to DFA Converter</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#17233b;--muted:#66738b;--line:#e3e9f3;--blue:#4567f5;--blue2:#eef2ff;--teal:#0b8995;--green:#11966a;--greenbg:#e7f8f1;--shadow:0 8px 28px rgba(26,43,80,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.nav{max-width:1220px;margin:auto;padding:17px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.03em;font-size:20px}.logo{display:grid;place-items:center;width:38px;height:38px;background:var(--blue);color:white;border-radius:12px;font-weight:900}.nav small{color:var(--muted);font-weight:600}.hero{max-width:1220px;margin:0 auto;padding:34px 24px 18px}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--blue)}h1{font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.04em;margin:8px 0 10px}.hero p{color:var(--muted);margin:0;max-width:760px}.wrap{max-width:1220px;margin:auto;padding:0 24px 52px}.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.panel{padding:21px;position:sticky;top:88px}.panel h2,.section-head h2{font-size:17px;letter-spacing:-.02em;margin:0}.muted{color:var(--muted);font-size:13px}.field{margin-top:17px}.field label{display:block;font-size:12px;font-weight:800;color:#34415a;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid #dbe2ee;background:#fbfcff;border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;color:var(--ink);outline:none}.field input:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4567f51c}.field textarea{min-height:98px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.6}.hint{font-size:11px;color:var(--muted);margin-top:6px}.btn{border:0;border-radius:11px;padding:11px 14px;font:inherit;font-weight:750;font-size:13px;cursor:pointer;transition:.15s}.btn-primary{background:var(--blue);color:#fff;width:100%;margin-top:18px;box-shadow:0 5px 12px #4567f52b}.btn-primary:hover{background:#3154e8;transform:translateY(-1px)}.btn-secondary{background:#f0f3fa;color:#34415a;border:1px solid var(--line)}.btn-secondary:hover{background:#e7ecf7}.button-row{display:flex;gap:8px;margin-top:9px}.button-row .btn{flex:1}.example{font-size:12px;margin-top:14px;color:var(--blue);font-weight:750;cursor:pointer}.error{display:none;margin-top:12px;padding:10px;border-radius:10px;background:#fff0f0;color:#b42318;font-size:12px}
+.content{min-width:0}.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:16px}.step-chip{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 9px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:750}.step-chip .num{width:24px;height:24px;flex-shrink:0;border-radius:8px;background:#f0f3fa;display:grid;place-items:center;color:#58657e}.step-chip.active{border-color:#c9d2ff;background:#f5f7ff;color:var(--blue)}.step-chip.active .num{background:var(--blue);color:#fff}.section{margin-bottom:17px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:19px 21px 0}.section-head .tag{font-size:11px;font-weight:800;color:var(--blue);background:var(--blue2);padding:5px 8px;border-radius:7px;white-space:nowrap}.section-body{padding:15px 21px 21px}.section-desc{font-size:13px;color:var(--muted);margin:0 0 14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;font-size:13px;min-width:320px}th{background:#f7f9fd;color:#5c6981;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em}th,td{padding:11px 13px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:0}td code{background:#f0f3fa;border-radius:5px;padding:3px 6px;color:#33415d;font-family:ui-monospace,monospace}.state-pill{display:inline-block;border-radius:7px;padding:4px 7px;background:#eef2ff;color:#3c57d7;font-family:ui-monospace,monospace;font-size:12px;white-space:nowrap}.accept{background:var(--greenbg);color:#08794f}.diagram{width:100%;overflow:auto;min-height:220px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(#fff,#fcfdff);display:flex;align-items:center;justify-content:center;padding:10px}.diagram svg{display:block;max-width:100%;height:auto}.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}.subsets{display:grid;gap:10px}.subset-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:13px}.subset-n{width:30px;height:30px;border-radius:9px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-weight:850;font-size:12px}.subset-row strong{font-size:13px}.subset-row p{font-size:12px;color:var(--muted);margin:4px 0 0}.formula{font-family:ui-monospace,monospace;font-size:12px;background:#f7f9fd;border-radius:7px;padding:7px 9px;margin-top:7px;overflow-wrap:anywhere}.accept-note{color:var(--green);font-size:11px;font-weight:800}.footer{text-align:center;color:#8a95a9;font-size:12px;padding:14px}.hidden{display:none!important}.notice{padding:11px 13px;background:#f5f7ff;border:1px solid #e0e6ff;border-radius:10px;color:#45557c;font-size:12px;margin-top:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.panel{position:static}.steps{grid-template-columns:repeat(3,minmax(0,1fr))}.nav{padding:13px 18px}.hero,.wrap{padding-left:18px;padding-right:18px}}
+@media(max-width:520px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.section-head{padding:16px 15px 0}.section-body{padding:13px 15px 16px}.panel{padding:17px}.hero{padding-top:25px}.nav small{display:none}.subset-row{grid-template-columns:30px minmax(0,1fr)}.subset-row .accept-note{grid-column:2}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand"><span class="logo">A</span><span>AutomataLab</span></div><small>THEORY OF COMPUTATION · INTERACTIVE TOOL</small></div></header>
+<section class="hero"><div class="eyebrow">Finite automata toolkit</div><h1>NFA to DFA Converter</h1><p>Convert a nondeterministic finite automaton into an equivalent DFA with a clear, classroom-style solution: transition tables, subset construction calculations, and state diagrams.</p></section>
+<main class="wrap"><div class="layout">
+<aside class="panel">
+<h2>Define your NFA</h2><p class="muted">Enter states and transitions. One transition per line.</p>
+<div class="field"><label for="states">STATES</label><input id="states" value="q0,q1,q2" placeholder="q0,q1,q2"></div>
+<div class="field"><label for="alphabet">INPUT ALPHABET</label><input id="alphabet" value="0,1" placeholder="0,1"><div class="hint">Use comma-separated symbols, e.g. 0,1. Epsilon transitions are supported with ε.</div></div>
+<div class="field"><label for="start">INITIAL STATE</label><input id="start" value="q0" placeholder="q0"></div>
+<div class="field"><label for="finals">FINAL STATES</label><input id="finals" value="q0" placeholder="q0,q2"></div>
+<div class="field"><label for="transitions">TRANSITIONS</label><textarea id="transitions" spellcheck="false">q0,0,q0
+q0,0,q1
+q1,1,q1
+q1,1,q2
+q2,0,q0</textarea><div class="hint">Format: source,symbol,destination. Add separate lines for multiple transitions. Use ε for epsilon.</div></div>
+<button class="btn btn-primary" id="convert">Convert NFA to DFA</button>
+<div class="button-row"><button class="btn btn-secondary" id="example">Load classroom example</button><button class="btn btn-secondary" id="reset">Reset</button></div>
+<div id="error" class="error"></div>
+<div class="notice">Tip: DFA states are sets of NFA states. A DFA state is accepting if its set contains at least one NFA final state.</div>
+</aside>
+<div class="content">
+<div class="steps" id="stepChips">
+<div class="step-chip active"><span class="num">1</span><span>Original NFA</span></div><div class="step-chip"><span class="num">2</span><span>NFA table</span></div><div class="step-chip"><span class="num">3</span><span>Subset steps</span></div><div class="step-chip"><span class="num">4</span><span>DFA table</span></div><div class="step-chip"><span class="num">5</span><span>Equivalent DFA</span></div>
+</div>
+<section class="card section"><div class="section-head"><h2>01 · Original NFA</h2><span class="tag">INPUT AUTOMATON</span></div><div class="section-body"><p class="section-desc">The automaton you entered, including its start arrow and accepting states.</p><div class="diagram" id="nfaDiagram"><div class="empty">Enter an NFA and select Convert to generate its diagram.</div></div></div></section>
+<section class="card section"><div class="section-head"><h2>02 · NFA Transition Table</h2><span class="tag">STEP 1</span></div><div class="section-body"><p class="section-desc">Each cell lists all possible destinations for a state and input symbol.</p><div class="table-wrap" id="nfaTable"><div class="empty">The NFA transition table will appear here.</div></div></div></section>
+<section class="card section"><div class="section-head"><h2>03 · Subset Construction</h2><span class="tag">STEP 2</span></div><div class="section-body"><p class="section-desc">Start from the epsilon-closure of the initial state. For each input, collect reachable states and apply epsilon-closure. Repeat until no new subsets appear.</p><div id="subsetSteps" class="subsets"><div class="empty">The state-by-state calculations will appear here.</div></div></div></section>
+<section class="card section"><div class="section-head"><h2>04 · DFA Transition Table</h2><span class="tag">STEP 3</span></div><div class="section-body"><p class="section-desc">Each DFA state is labelled by the set of NFA states it represents. Accepting DFA states contain an NFA accepting state.</p><div class="table-wrap" id="dfaTable"><div class="empty">The DFA transition table will appear here.</div></div></div></section>
+<section class="card section"><div class="section-head"><h2>05 · Equivalent DFA</h2><span class="tag">FINAL RESULT</span></div><div class="section-body"><p class="section-desc">The generated DFA is equivalent to the original NFA: both accept the same language.</p><div class="diagram" id="dfaDiagram"><div class="empty">The equivalent DFA diagram will appear here.</div></div><div class="notice" id="resultNote">After conversion, the result summary will appear here.</div></div></section>
+</div></div><div class="footer">AutomataLab · Built for learning subset construction step by step</div></main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const setKey=s=>[...s].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).join('|');
+const setLabel=s=>s.size?'{'+[...s].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).join(', ')+'}':'∅';
+const split=s=>s.split(',').map(x=>x.trim()).filter(Boolean);
+let lastModel=null;
+function parseInput(){
+ const states=split($('states').value), alphabet=split($('alphabet').value), start=$('start').value.trim(), finals=new Set(split($('finals').value));
+ if(!states.length)throw Error('Enter at least one state.');
+ if(new Set(states).size!==states.length)throw Error('State names must be unique.');
+ if(!states.includes(start))throw Error('The initial state must be included in the states list.');
+ for(const f of finals)if(!states.includes(f))throw Error('Final state "'+f+'" is not in the states list.');
+ if(alphabet.includes('ε')||alphabet.includes('eps'))throw Error('Do not include ε in the input alphabet; epsilon is handled automatically.');
+ const symbols=[...alphabet,'ε'];const trans=new Map();
+ states.forEach(s=>symbols.forEach(a=>trans.set(s+'|'+a,new Set())));
+ const lines=$('transitions').value.split(/\n/).map(x=>x.trim()).filter(Boolean);
+ for(let i=0;i<lines.length;i++){
+  const parts=lines[i].split(',').map(x=>x.trim());
+  if(parts.length!==3)throw Error('Transition line '+(i+1)+' must be source,symbol,destination.');
+  let [from,sym,to]=parts;if(sym==='eps'||sym==='epsilon')sym='ε';
+  if(!states.includes(from)||!states.includes(to))throw Error('Transition line '+(i+1)+' uses an unknown state.');
+  if(!symbols.includes(sym))throw Error('Transition line '+(i+1)+' uses symbol "'+sym+'", which is not in the alphabet or ε.');
+  trans.get(from+'|'+sym).add(to);
+ }
+ return {states,alphabet,start,finals,trans};
+}
+function move(model,subset,sym){let out=new Set();subset.forEach(s=>model.trans.get(s+'|'+sym).forEach(t=>out.add(t)));return out}
+function closure(model,subset){let out=new Set(subset),stack=[...subset];while(stack.length){const s=stack.pop();for(const t of model.trans.get(s+'|ε'))if(!out.has(t)){out.add(t);stack.push(t)}}return out}
+function construct(model){
+ const initial=closure(model,new Set([model.start])), queue=[initial], seen=new Map([[setKey(initial),initial]]), rows=[], calculations=[];
+ while(queue.length){
+  const current=queue.shift(),key=setKey(current), moves=[];
+  for(const sym of model.alphabet){
+   const raw=move(model,current,sym),dest=closure(model,raw),dk=setKey(dest);
+   moves.push({sym,raw,dest});
+   if(!seen.has(dk)){seen.set(dk,dest);queue.push(dest)}
+  }
+  rows.push({key,set:current,moves});
+  calculations.push({key,set:current,moves});
+  if(seen.size>256)throw Error('This NFA produces more than 256 reachable DFA states. Please use a smaller example.');
+ }
+ return {initial,rows,calculations,states:[...seen.values()]};
+}
+function tableHTML(headers,rows){return '<table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>'}
+function renderTable(model){
+ const nrows=model.states.map(s=>[s==model.start?'<strong>→ '+esc(s)+'</strong>':(model.finals.has(s)?'<strong>* '+esc(s)+'</strong>':esc(s)),...model.alphabet.map(a=>{const d=model.trans.get(s+'|'+a);return d.size?'<code>'+esc(setLabel(d))+'</code>':'<code>∅</code>'})]);
+ $('nfaTable').innerHTML=tableHTML(['NFA state',...model.alphabet],nrows);
+}
+function renderSubset(model,dfa){
+ const html=dfa.calculations.map((row,i)=>{
+  const accepting=[...row.set].some(s=>model.finals.has(s));
+  const details=row.moves.map(m=>`<div class="formula">δ(${esc(setLabel(row.set))}, ${esc(m.sym)}) = ε-closure(${esc(setLabel(m.raw))}) = <strong>${esc(setLabel(m.dest))}</strong></div>`).join('');
+  return `<div class="subset-row"><div class="subset-n">D${i+1}</div><div><strong>${esc(setLabel(row.set))}</strong><p>${i===0?'Initial DFA state': 'Reachable subset'}${accepting?' · accepting state':''}</p>${details}</div>${accepting?'<span class="accept-note">FINAL</span>':''}</div>`;
+ }).join('');
+ $('subsetSteps').innerHTML=html;
+ const names=new Map(dfa.rows.map((r,i)=>[r.key,'D'+(i+1)]));
+ $('dfaTable').innerHTML=tableHTML(['DFA state (NFA subset)',...model.alphabet],dfa.rows.map(r=>{const i=names.get(r.key),acc=[...r.set].some(s=>model.finals.has(s));return [(setKey(dfa.initial)===r.key?'→ ':'')+(acc?'* ':'')+'<span class="state-pill '+(acc?'accept':'')+'">'+i+'</span> <code>'+esc(setLabel(r.set))+'</code>',...r.moves.map(m=>'<span class="state-pill">'+names.get(setKey(m.dest))+'</span> <code>'+esc(setLabel(m.dest))+'</code>')] }));
+ $('resultNote').innerHTML=`<strong>${dfa.rows.length} reachable DFA state${dfa.rows.length===1?'':'s'} generated.</strong> ${dfa.rows.filter(r=>[...r.set].some(s=>model.finals.has(s))).length} accepting state(s). The subset construction preserves the language accepted by the NFA.`;
+}
+function svgDiagram(states,alphabet,transitions,start,isFinal,labelFn){
+ // A compact left-to-right layered layout. Self-loops are drawn above nodes; repeated edges are curved.
+ const n=states.length;if(!n)return '<div class="empty">No states to display.</div>';
+ const width=Math.max(580,Math.min(1120,n*150+70)),height=Math.max(220,Math.ceil(n/6)*150+90),cols=Math.max(1,Math.ceil(Math.sqrt(n))),cellW=(width-90)/cols,cellH=130;
+ const pos=new Map();states.forEach((s,i)=>{const row=Math.floor(i/cols),col=i%cols;pos.set(s,{x:50+col*cellW+cellW/2,y:55+row*cellH+35})});
+ let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Finite automaton state diagram"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7787a5"/></marker></defs>`;
+ // group edges by source/destination so symbols share an edge label
+ const edgeMap=new Map();
+ transitions.forEach(t=>{const k=t.from+'>>'+t.to;if(!edgeMap.has(k))edgeMap.set(k,{from:t.from,to:t.to,labels:[]});edgeMap.get(k).labels.push(t.label)});
+ for(const e of edgeMap.values()){
+  const p=pos.get(e.from),q=pos.get(e.to);if(!p||!q)continue;const same=e.from===e.to;
+  if(same){out+=`<path d="M ${p.x-13} ${p.y-27} C ${p.x-47} ${p.y-78}, ${p.x+47} ${p.y-78}, ${p.x+13} ${p.y-27}" fill="none" stroke="#7787a5" stroke-width="1.8" marker-end="url(#arrow)"/>`;out+=`<text x="${p.x}" y="${p.y-67}" text-anchor="middle" font-size="13" fill="#40516f">${esc(e.labels.join(', '))}</text>`}
+  else {const dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,px=-uy,py=ux;const sx=p.x+ux*29,sy=p.y+uy*29,ex=q.x-ux*31,ey=q.y-uy*31;const curve= Math.abs(dy)<15 ? -26 : (dx<0?35:-22);const cx=(sx+ex)/2+px*curve,cy=(sy+ey)/2+py*curve;out+=`<path d="M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}" fill="none" stroke="#7787a5" stroke-width="1.8" marker-end="url(#arrow)"/>`;out+=`<text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="13" fill="#40516f">${esc(e.labels.join(', '))}</text>`}
+ }
+ const p=pos.get(start);out+=`<path d="M ${Math.max(5,p.x-57)} ${p.y} L ${p.x-33} ${p.y}" stroke="#7787a5" stroke-width="1.8" marker-end="url(#arrow)"/>`;
+ states.forEach(s=>{const p=pos.get(s),fin=isFinal(s);out+=`<circle cx="${p.x}" cy="${p.y}" r="27" fill="${fin?'#e7f8f1':'#fff'}" stroke="${fin?'#11966a':'#4567f5'}" stroke-width="2.2"/>`;if(fin)out+=`<circle cx="${p.x}" cy="${p.y}" r="22" fill="none" stroke="#11966a" stroke-width="1.4"/>`;out+=`<text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#17233b">${esc(labelFn(s))}</text>`});
+ out+='</svg>';return out;
+}
+function renderDiagrams(model,dfa){
+ const nTransitions=[];model.states.forEach(s=>model.alphabet.forEach(a=>model.trans.get(s+'|'+a).forEach(t=>nTransitions.push({from:s,to:t,label:a}))));model.states.forEach(s=>model.trans.get(s+'|ε').forEach(t=>nTransitions.push({from:s,to:t,label:'ε'})));
+ $('nfaDiagram').innerHTML=svgDiagram(model.states,model.alphabet,nTransitions,model.start,s=>model.finals.has(s),s=>s);
+ const dnames=dfa.rows.map((r,i)=>'D'+(i+1)),lookup=new Map(dfa.rows.map((r,i)=>[r.key,'D'+(i+1)])),dtrans=[];
+ dfa.rows.forEach(r=>r.moves.forEach(m=>dtrans.push({from:lookup.get(r.key),to:lookup.get(setKey(m.dest)),label:m.sym})));
+ $('dfaDiagram').innerHTML=svgDiagram(dnames,model.alphabet,dtrans,lookup.get(setKey(dfa.initial)),name=>{const row=dfa.rows.find(r=>lookup.get(r.key)===name);return row&&[...row.set].some(s=>model.finals.has(s))},name=>name);
+}
+function run(){
+ $('error').style.display='none';
+ try{const model=parseInput(),dfa=construct(model);lastModel={model,dfa};renderTable(model);renderSubset(model,dfa);renderDiagrams(model,dfa);document.querySelectorAll('.step-chip').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.step-chip').forEach(x=>x.classList.add('active'));}
+ catch(e){$('error').textContent=e.message;$('error').style.display='block'}
+}
+$('convert').addEventListener('click',run);
+$('example').addEventListener('click',()=>{$('states').value='q0,q1,q2';$('alphabet').value='0,1';$('start').value='q0';$('finals').value='q0';$('transitions').value='q0,0,q0\nq0,0,q1\nq1,1,q1\nq1,1,q2\nq2,0,q0';run()});
+$('reset').addEventListener('click',()=>{$('states').value='';$('alphabet').value='0,1';$('start').value='';$('finals').value='';$('transitions').value='';['nfaDiagram','nfaTable','subsetSteps','dfaTable','dfaDiagram'].forEach(id=>$(id).innerHTML='<div class="empty">Enter an NFA and select Convert to generate results.</div>');$('error').style.display='none';$('resultNote').textContent='After conversion, the result summary will appear here.'});
+run();
+</script>
+</body>
+</html>
